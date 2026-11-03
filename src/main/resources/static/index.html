@@ -90,13 +90,13 @@
                 <span class="num">2</span>
                 <h3>이미지 만들기</h3>
                 <p>Dockerfile대로 Java 21 위에 jar를 담아 이미지를 만듭니다.</p>
-                <code>docker build -t spring-blog .</code>
+                <code>docker build -t demo-docker-1 .</code>
             </div>
             <div class="step">
                 <span class="num">3</span>
                 <h3>컨테이너 실행</h3>
                 <p>이미지로 컨테이너를 띄우고, 키는 .env에서 넘깁니다.</p>
-                <code>docker run -d -p 8080:8080 --env-file .env --name blog spring-blog</code>
+                <code>docker run -d -p 8080:8080 --env-file .env --name blog demo-docker-1</code>
             </div>
         </div>
     </section>
@@ -117,7 +117,7 @@
             <h3>코드를 고쳤다면</h3>
             <ul>
                 <li>./gradlew clean build -x test</li>
-                <li>docker build -t spring-blog .</li>
+                <li>docker build -t demo-docker-1 .</li>
                 <li>docker rm -f blog</li>
                 <li>docker run (위 3번 명령)</li>
             </ul>
