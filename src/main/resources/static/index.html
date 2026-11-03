@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Docker로 실행하는 Spring Boot</title>
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --panel: #ffffff;
+            --ink: #1c2430;
+            --muted: #5b6878;
+            --line: #d9e1ec;
+            --accent: #2496ed;
+            --green: #1e8e4f;
+            --term: #1e2630;
+            --term-ink: #d6e2f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px 64px; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 4px 12px; border-radius: 999px;
+            background: #e6f5ec; color: var(--green);
+            font-size: 13px; font-weight: 700;
+        }
+        .badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+        h1 { margin-top: 14px; font-size: 32px; line-height: 1.3; }
+        .lead { margin-top: 8px; color: var(--muted); font-size: 16px; }
+        h2 { font-size: 18px; margin-bottom: 12px; }
+        section { margin-top: 32px; }
+        .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .step {
+            background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+            padding: 16px;
+        }
+        .step .num {
+            display: inline-flex; width: 26px; height: 26px; border-radius: 7px;
+            align-items: center; justify-content: center;
+            background: var(--accent); color: #fff; font-size: 13px; font-weight: 800;
+        }
+        .step h3 { margin-top: 8px; font-size: 15px; }
+        .step p { margin-top: 4px; font-size: 13.5px; color: var(--muted); }
+        .step code { display: block; margin-top: 10px; font-size: 12.5px; color: var(--accent); }
+        pre {
+            background: var(--term); color: var(--term-ink); border-radius: 12px;
+            padding: 16px 18px; overflow-x: auto;
+            font-family: "JetBrains Mono", Consolas, "D2Coding", monospace;
+            font-size: 13px; line-height: 1.7;
+        }
+        pre .c { color: #8b98a8; }
+        pre .k { color: #7ee787; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card {
+            background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+            padding: 16px;
+        }
+        .card h3 { font-size: 15px; margin-bottom: 6px; }
+        .card p, .card li { font-size: 13.5px; color: var(--muted); }
+        .card ul { padding-left: 18px; }
+        footer { margin-top: 40px; font-size: 12.5px; color: var(--muted); text-align: center; }
+        @media (max-width: 720px) {
+            .flow, .grid2 { grid-template-columns: 1fr; }
+            h1 { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+<main class="wrap">
+    <span class="badge"><span class="dot"></span>컨테이너에서 실행 중</span>
+    <h1>도커 파일 실행 프로젝트</h1>
+    <p class="lead">이 화면이 보이면 Spring Boot 앱이 Docker 컨테이너 안에서 정상적으로 실행되고 있는 것입니다.</p>
+
+    <section>
+        <h2>코드가 화면이 되기까지</h2>
+        <div class="flow">
+            <div class="step">
+                <span class="num">1</span>
+                <h3>jar 만들기</h3>
+                <p>Gradle이 내 코드를 실행 가능한 jar 파일로 묶습니다.</p>
+                <code>./gradlew clean build -x test</code>
+            </div>
+            <div class="step">
+                <span class="num">2</span>
+                <h3>이미지 만들기</h3>
+                <p>Dockerfile대로 Java 21 위에 jar를 담아 이미지를 만듭니다.</p>
+                <code>docker build -t spring-blog .</code>
+            </div>
+            <div class="step">
+                <span class="num">3</span>
+                <h3>컨테이너 실행</h3>
+                <p>이미지로 컨테이너를 띄우고, 키는 .env에서 넘깁니다.</p>
+                <code>docker run -d -p 8080:8080 --env-file .env --name blog spring-blog</code>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Dockerfile</h2>
+        <pre><span class="k">FROM</span> amazoncorretto:21                   <span class="c"># 프로젝트와 같은 Java 21</span>
+<span class="k">COPY</span> build/libs/*SNAPSHOT.jar /app.jar   <span class="c"># 실행용 jar만 복사</span>
+<span class="k">ENTRYPOINT</span> ["java", "-jar", "/app.jar"]  <span class="c"># 컨테이너가 켜질 때마다 서버 실행</span></pre>
+    </section>
+
+    <section class="grid2">
+        <div class="card">
+            <h3>이 페이지는 어디에 있나요?</h3>
+            <p>src/main/resources/static/index.html 입니다. 이 폴더의 파일은 jar 안에 함께 담겨, 컨테이너에서도 localhost:8080 첫 화면으로 보입니다.</p>
+        </div>
+        <div class="card">
+            <h3>코드를 고쳤다면</h3>
+            <ul>
+                <li>./gradlew clean build -x test</li>
+                <li>docker build -t spring-blog .</li>
+                <li>docker rm -f blog</li>
+                <li>docker run (위 3번 명령)</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>키는 이미지에 넣지 않습니다</h3>
+            <p>SMS 키 같은 비밀 값은 .env에 두고 실행할 때 --env-file .env로 넘깁니다. .env는 .dockerignore와 .gitignore에 적어 둡니다.</p>
+        </div>
+        <div class="card">
+            <h3>상태 확인 명령</h3>
+            <ul>
+                <li>docker ps : 실행 중인 컨테이너</li>
+                <li>docker logs -f --tail 5 blog : 실시간 로그</li>
+                <li>docker rm -f blog : 컨테이너 정리</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>Dockerfile 강의 실습용 샘플 프로젝트</footer>
+</main>
+</body>
+</html>

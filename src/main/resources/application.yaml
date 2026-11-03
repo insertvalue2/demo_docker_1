@@ -1,0 +1,9 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+
+api:
+  key:
+    - sms1: ${SMS_API_KEY}
+    - sms2: ${SMS_API_SECRET}
